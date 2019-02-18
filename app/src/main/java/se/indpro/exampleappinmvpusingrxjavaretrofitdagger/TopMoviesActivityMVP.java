@@ -1,8 +1,9 @@
 package se.indpro.exampleappinmvpusingrxjavaretrofitdagger;
 
-import android.database.Observable;
+import io.reactivex.Observable;
 
 public interface TopMoviesActivityMVP {
+
     interface View{
         void updateData(ViewModel viewModel);
         void showSnackbar(String s);
@@ -17,4 +18,5 @@ public interface TopMoviesActivityMVP {
     interface Model{
         Observable<ViewModel> result();
     }
+
 }
