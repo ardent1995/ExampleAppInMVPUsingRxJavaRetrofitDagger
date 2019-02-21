@@ -1,6 +1,5 @@
-package se.indpro.exampleappinmvpusingrxjavaretrofitdagger;
+package se.indpro.exampleappinmvpusingrxjavaretrofitdagger.topmovies;
 
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
@@ -25,12 +24,17 @@ public class TopMoviesActivityPresenter implements TopMoviesActivityMVP.Presente
 
                     @Override
                     public void onNext(ViewModel viewModel) {
-
+                        if(view != null){
+                            view.updateData(viewModel);
+                        }
                     }
 
                     @Override
                     public void onError(Throwable e) {
-
+                        e.printStackTrace();
+                        if(view != null){
+                            view.showSnackbar("Error getting movies");
+                        }
                     }
 
                     @Override
@@ -42,11 +46,15 @@ public class TopMoviesActivityPresenter implements TopMoviesActivityMVP.Presente
 
     @Override
     public void rxUnsubscribe() {
-
+        if(subscription != null){
+            if(!subscription.isDisposed()){
+                subscription.dispose();
+            }
+        }
     }
 
     @Override
     public void setView(TopMoviesActivityMVP.View view) {
-
+        this.view = view;
     }
 }

@@ -1,4 +1,4 @@
-package se.indpro.exampleappinmvpusingrxjavaretrofitdagger;
+package se.indpro.exampleappinmvpusingrxjavaretrofitdagger.topmovies;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -7,10 +7,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import se.indpro.exampleappinmvpusingrxjavaretrofitdagger.R;
 import se.indpro.exampleappinmvpusingrxjavaretrofitdagger.adapter.RecyclerViewAdapter;
 import se.indpro.exampleappinmvpusingrxjavaretrofitdagger.root.App;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
@@ -60,7 +62,13 @@ public class TopMoviesActivity extends AppCompatActivity implements TopMoviesAct
 
     @Override
     public void updateData(ViewModel viewModel) {
-
+        resultList.add(viewModel);
+        if(resultList.isEmpty()){
+            recyclerViewAdapter.notifyItemInserted(0);
+        }else{
+            recyclerViewAdapter.notifyItemInserted(resultList.size() - 1);
+        }
+        Log.d(TAG,"updateData: "+resultList.size());
     }
 
     @Override

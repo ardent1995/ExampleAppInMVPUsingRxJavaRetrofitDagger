@@ -3,11 +3,13 @@ package se.indpro.exampleappinmvpusingrxjavaretrofitdagger.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
 import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import se.indpro.exampleappinmvpusingrxjavaretrofitdagger.R;
-import se.indpro.exampleappinmvpusingrxjavaretrofitdagger.ViewModel;
+import se.indpro.exampleappinmvpusingrxjavaretrofitdagger.topmovies.ViewModel;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
@@ -37,8 +39,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     class ViewHolder extends RecyclerView.ViewHolder{
 
+        public TextView tvMovieName;
+        public TextView tvCountryName;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            tvMovieName = itemView.findViewById(R.id.tv_movie_name);
+            tvCountryName = itemView.findViewById(R.id.tv_country_name);
         }
     }
 }

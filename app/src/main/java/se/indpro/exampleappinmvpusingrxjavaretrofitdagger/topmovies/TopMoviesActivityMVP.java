@@ -1,4 +1,4 @@
-package se.indpro.exampleappinmvpusingrxjavaretrofitdagger;
+package se.indpro.exampleappinmvpusingrxjavaretrofitdagger.topmovies;
 
 import io.reactivex.Observable;
 
