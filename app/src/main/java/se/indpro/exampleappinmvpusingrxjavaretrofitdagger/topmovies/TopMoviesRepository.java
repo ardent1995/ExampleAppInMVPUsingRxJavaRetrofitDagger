@@ -6,9 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import se.indpro.exampleappinmvpusingrxjavaretrofitdagger.http.MoreInfoApiService;
 import se.indpro.exampleappinmvpusingrxjavaretrofitdagger.http.MovieApiService;
+import se.indpro.exampleappinmvpusingrxjavaretrofitdagger.http.apimodel.OmdbApi;
 import se.indpro.exampleappinmvpusingrxjavaretrofitdagger.http.apimodel.Result;
+import se.indpro.exampleappinmvpusingrxjavaretrofitdagger.http.apimodel.TopRated;
 
 public class TopMoviesRepository implements Repository {
 
@@ -34,32 +39,72 @@ public class TopMoviesRepository implements Repository {
 
     @Override
     public Observable<Result> getResultsFromMemory() {
-        return null;
+        if(isUpToDate()){
+            return  Observable.fromIterable(resultList);
+        }else {
+            timestamp = System.currentTimeMillis();
+            resultList.clear();
+            return Observable.empty();
+        }
     }
 
     @Override
     public Observable<Result> getResultsFromNetwork() {
-        return null;
+        Observable<TopRated> topRatedObservable = movieApiService.getTopRatedMovies(1)
+                .concatWith(movieApiService.getTopRatedMovies(2)
+                .concatWith(movieApiService.getTopRatedMovies(3)));
+        return topRatedObservable.concatMap(new Function<TopRated, ObservableSource<Result>>() {
+            @Override
+            public ObservableSource<Result> apply(TopRated topRated) throws Exception {
+                return Observable.fromIterable(topRated.getResults());
+            }
+        }).doOnNext(new Consumer<Result>() {
+            @Override
+            public void accept(Result result) throws Exception {
+                resultList.add(result);
+            }
+        });
     }
 
     @Override
     public Observable<String> getCountriesFromMemory() {
-        return null;
+        if(isUpToDate()){
+            return Observable.fromIterable(countryList);
+        }else {
+            timestamp = System.currentTimeMillis();
+            countryList.clear();
+            return Observable.empty();
+        }
     }
 
     @Override
     public Observable<String> getCountriesFromNetwork() {
-        return null;
+        return getResultsFromNetwork().concatMap(new Function<Result, ObservableSource<OmdbApi>>() {
+            @Override
+            public ObservableSource<OmdbApi> apply(Result result) throws Exception {
+                return moreInfoApiService.getCountry(result.getTitle());
+            }
+        }).concatMap(new Function<OmdbApi, ObservableSource<String>>() {
+            @Override
+            public ObservableSource<String> apply(OmdbApi omdbApi) throws Exception {
+                return Observable.just(omdbApi.getCountry());
+            }
+        }).doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                countryList.add(s);
+            }
+        });
     }
 
     @Override
     public Observable<String> getCountryData() {
-        return null;
+        return getCountriesFromMemory().switchIfEmpty(getCountriesFromNetwork());
     }
 
     @Override
     public Observable<Result> getResultData() {
-        return null;
+        return getResultsFromMemory().switchIfEmpty(getResultsFromNetwork());
     }
 
 }

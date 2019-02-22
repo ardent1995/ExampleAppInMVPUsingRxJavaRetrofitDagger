@@ -15,6 +15,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.ViewGroup;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,25 +56,29 @@ public class TopMoviesActivity extends AppCompatActivity implements TopMoviesAct
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
         presenter.setView(this);
         presenter.loadData();
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        presenter.rxUnsubscribe();
+        resultList.clear();
+        recyclerViewAdapter.notifyDataSetChanged();
+    }
+
+    @Override
     public void updateData(ViewModel viewModel) {
         resultList.add(viewModel);
-        if(resultList.isEmpty()){
-            recyclerViewAdapter.notifyItemInserted(0);
-        }else{
-            recyclerViewAdapter.notifyItemInserted(resultList.size() - 1);
-        }
+        recyclerViewAdapter.notifyItemInserted(resultList.size() - 1);
         Log.d(TAG,"updateData: "+resultList.size());
     }
 
     @Override
     public void showSnackbar(String s) {
-
+        Snackbar.make(rootView,s,Snackbar.LENGTH_LONG).show();
     }
 }
